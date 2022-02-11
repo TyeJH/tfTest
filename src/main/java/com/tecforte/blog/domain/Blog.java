@@ -42,6 +42,14 @@ public class Blog extends AbstractAuditingEntity implements Serializable {
     @JsonIgnoreProperties("blogs")
     private User user;
 
+    private Entry entry;
+
+    public Entry getEntry(){
+        return entry;
+    }
+    public void setEntry(Entry entry){
+        this.entry=entry;
+    }
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -138,6 +146,7 @@ public class Blog extends AbstractAuditingEntity implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", positive='" + isPositive() + "'" +
+            ", entry=" + getEntries().size() +
             "}";
     }
 }

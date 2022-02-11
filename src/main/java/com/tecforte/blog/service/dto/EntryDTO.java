@@ -23,6 +23,7 @@ public class EntryDTO implements Serializable {
     @Lob
     private String content;
 
+    private BlogDTO blog;
 
     private Long blogId;
 
@@ -35,6 +36,14 @@ public class EntryDTO implements Serializable {
     private String lastModifiedBy;
 
     private Instant lastModifiedDate;
+
+    public BlogDTO getBlog(){
+        return blog;
+    }
+
+    public void setBlog(BlogDTO blog){
+        this.blog=blog;
+    }
 
     public Long getId() {
         return id;

@@ -1,7 +1,9 @@
 package com.tecforte.blog.service;
 
 import com.tecforte.blog.domain.Blog;
+import com.tecforte.blog.domain.Entry;
 import com.tecforte.blog.repository.BlogRepository;
+import com.tecforte.blog.repository.EntryRepository;
 import com.tecforte.blog.service.dto.BlogDTO;
 import com.tecforte.blog.service.mapper.BlogMapper;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ public class BlogService {
         blog = blogRepository.save(blog);
         return blogMapper.toDto(blog);
     }
-
+    
     /**
      * Get all the blogs.
      *
@@ -58,7 +60,6 @@ public class BlogService {
             .map(blogMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
     }
-
 
     /**
      * Get one blog by id.

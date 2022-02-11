@@ -58,7 +58,7 @@ export class EntryUpdateComponent implements OnInit {
       title: entry.title,
       emoji: entry.emoji,
       content: entry.content,
-      blogId: entry.blogId
+      blog: entry.blog
     });
   }
 
@@ -116,7 +116,7 @@ export class EntryUpdateComponent implements OnInit {
       title: this.editForm.get(['title']).value,
       emoji: this.editForm.get(['emoji']).value,
       content: this.editForm.get(['content']).value,
-      blogId: this.editForm.get(['blogId']).value
+      blog: this.editForm.get(['blogId']).value
     };
   }
 
@@ -137,6 +137,6 @@ export class EntryUpdateComponent implements OnInit {
   }
 
   trackBlogById(index: number, item: IBlog) {
-    return item.id;
+    return item;
   }
 }

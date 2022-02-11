@@ -1,5 +1,6 @@
 package com.tecforte.blog.web.rest;
 
+import com.tecforte.blog.domain.Entry;
 import com.tecforte.blog.service.BlogService;
 import com.tecforte.blog.web.rest.errors.BadRequestAlertException;
 import com.tecforte.blog.service.dto.BlogDTO;
@@ -9,13 +10,16 @@ import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,4 +120,26 @@ public class BlogResource {
         blogService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
+
+    @DeleteMapping("/blogs/{id}/clean")
+    public ResponseEntity<Void> deleteBlogEntries(@PathVariable Long id, @RequestParam String keywords) {
+        log.debug("REST request to delete Blog Entry : {}", id);
+        String[] splitKeywords = keywords.split(",");
+        Optional<BlogDTO> blogDTO = blogService.findOne(id);
+        BlogDTO dto = new BlogDTO();
+        List<Entry> entry = new ArrayList<>( blogDTO.get().getEntryDTO());
+        for(int i=0;i<entry.size();i++){
+            for (String keyword : splitKeywords) {
+                if(entry.get(i).getTitle().toUpperCase().contains(keyword.toUpperCase())){
+                    blogDTO.get().removeEntry(entry.get(i));
+                    dto = blogService.save(blogDTO.get());
+                }
+            }
+        }
+        log.debug("Blog DTO {}", dto);
+        log.debug("Entry {}", dto.getEntryDTO());
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+    }
+
+
 }

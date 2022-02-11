@@ -1,8 +1,12 @@
 package com.tecforte.blog.service.dto;
 import java.time.Instant;
 import javax.validation.constraints.*;
+
+import com.tecforte.blog.domain.Entry;
+
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO for the {@link com.tecforte.blog.domain.Blog} entity.
@@ -18,6 +22,9 @@ public class BlogDTO implements Serializable {
     @NotNull
     private Boolean positive;
 
+    private Set<Entry> entry;
+
+    private Long entryId;
 
     private Long userId;
 
@@ -33,6 +40,28 @@ public class BlogDTO implements Serializable {
 
     private int entryCount;
 
+    public Set<Entry> getEntryDTO(){
+        return entry;
+    }
+
+    public void setEntryDTO(Set<Entry> entry){
+        this.entry = entry;
+    }
+
+    public BlogDTO removeEntry(Entry entry) {
+        this.entry.remove(entry);
+        entry.setBlog(null);
+        return this;
+    }
+    
+    public Long getEntryId(){
+        return entryId;
+    }
+
+    public void setEntryId(Long entryId){
+        this.entryId = entryId;
+    }
+    
     public Long getId() {
         return id;
     }

@@ -1,4 +1,5 @@
 import { Emoji } from 'app/shared/model/enumerations/emoji.model';
+import { Blog, IBlog } from './blog.model';
 
 export interface IEntry {
   id?: number;
@@ -7,6 +8,7 @@ export interface IEntry {
   content?: any;
   blogName?: string;
   blogId?: number;
+  blog?: IBlog;
   createdBy?: string;
   createdDate?: Date;
   lastModifiedBy?: string;
@@ -21,6 +23,7 @@ export class Entry implements IEntry {
     public content?: any,
     public blogName?: string,
     public blogId?: number,
+    public blog?: Blog,
     public createdBy?: string,
     public createdDate?: Date,
     public lastModifiedBy?: string,

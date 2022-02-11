@@ -45,6 +45,10 @@ public class EntryService {
         return entryMapper.toDto(entry);
     }
 
+    public Entry convert(EntryDTO entryDTO){
+        return entryMapper.toEntity(entryDTO);
+    }
+    
     /**
      * Get all the entries.
      *

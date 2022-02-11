@@ -15,7 +15,7 @@ public interface EntryMapper extends EntityMapper<EntryDTO, Entry> {
     @Mapping(source = "blog.name", target = "blogName")
     EntryDTO toDto(Entry entry);
 
-    @Mapping(source = "blogId", target = "blog")
+    @Mapping(source = "blog", target = "blog")
     Entry toEntity(EntryDTO entryDTO);
 
     default Entry fromId(Long id) {

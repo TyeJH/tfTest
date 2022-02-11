@@ -1,5 +1,6 @@
 package com.tecforte.blog.web.rest;
 
+import com.tecforte.blog.domain.Entry;
 import com.tecforte.blog.service.EntryService;
 import com.tecforte.blog.web.rest.errors.BadRequestAlertException;
 import com.tecforte.blog.service.dto.EntryDTO;
@@ -49,28 +50,55 @@ public class EntryResource {
      * {@code POST  /entries} : Create a new entry.
      *
      * @param entryDTO the entryDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new entryDTO, or with status {@code 400 (Bad Request)} if the entry has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+     *         body the new entryDTO, or with status {@code 400 (Bad Request)} if
+     *         the entry has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/entries")
     public ResponseEntity<EntryDTO> createEntry(@Valid @RequestBody EntryDTO entryDTO) throws URISyntaxException {
-        log.debug("REST request to save Entry : {}", entryDTO);
+        log.warn("REST request to save Entry : {}", entryDTO);
         if (entryDTO.getId() != null) {
             throw new BadRequestAlertException("A new entry cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        Entry e = entryService.convert(entryDTO);
+        if (e.getBlog() != null) {
+            if (e.getBlog().isPositive()) {
+                if ((e.getTitle().toUpperCase().contains("SAD") || e.getTitle().toUpperCase().contains("FEAR")
+                        || e.getTitle().toUpperCase().contains("LONELY"))
+                        || (e.getContent().toUpperCase().contains("SAD")
+                                || e.getContent().toUpperCase().contains("FEAR")
+                                || e.getContent().toUpperCase().contains("LONELY"))) {
+                    throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidContent");
+                }
+            } else if (!e.getBlog().isPositive()) {
+                if ((e.getTitle().toUpperCase().contains("HAPPY") || e.getTitle().toUpperCase().contains("LOVE")
+                        || e.getTitle().toUpperCase().contains("TRUST"))
+                        || (e.getContent().toUpperCase().contains("HAPPY")
+                                || e.getContent().toUpperCase().contains("LOVE")
+                                || e.getContent().toUpperCase().contains("TRUST"))) {
+                    throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidContent");
+                }
+            }
+        }
+
         EntryDTO result = entryService.save(entryDTO);
         return ResponseEntity.created(new URI("/api/entries/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME,
+                        result.getId().toString()))
+                .body(result);
     }
 
     /**
      * {@code PUT  /entries} : Updates an existing entry.
      *
      * @param entryDTO the entryDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated entryDTO,
-     * or with status {@code 400 (Bad Request)} if the entryDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the entryDTO couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the updated entryDTO,
+     *         or with status {@code 400 (Bad Request)} if the entryDTO is not
+     *         valid,
+     *         or with status {@code 500 (Internal Server Error)} if the entryDTO
+     *         couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/entries")
@@ -79,25 +107,49 @@ public class EntryResource {
         if (entryDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        Entry e = entryService.convert(entryDTO);
+        if (e.getBlog() != null) {
+            if (e.getBlog().isPositive()) {
+                if ((e.getTitle().toUpperCase().contains("SAD") || e.getTitle().toUpperCase().contains("FEAR")
+                        || e.getTitle().toUpperCase().contains("LONELY"))
+                        || (e.getContent().toUpperCase().contains("SAD")
+                                || e.getContent().toUpperCase().contains("FEAR")
+                                || e.getContent().toUpperCase().contains("LONELY"))) {
+                    throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidContent");
+                }
+            } else if (!e.getBlog().isPositive()) {
+                if ((e.getTitle().contains("HAPPY") || e.getTitle().contains("LOVE")
+                        || e.getTitle().contains("TRUST"))
+                        || (e.getContent().contains("HAPPY")
+                                || e.getContent().contains("LOVE")
+                                || e.getContent().contains("TRUST"))) {
+                    throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidContent");
+                }
+            }
+        }
+
         EntryDTO result = entryService.save(entryDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, entryDTO.getId().toString()))
-            .body(result);
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME,
+                        entryDTO.getId().toString()))
+                .body(result);
     }
 
     /**
      * {@code GET  /entries} : get all the entries.
      *
-
+     *
      * @param pageable the pagination information.
-
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of entries in body.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of entries in body.
      */
     @GetMapping("/entries")
     public ResponseEntity<List<EntryDTO>> getAllEntries(Pageable pageable) {
         log.debug("REST request to get a page of Entries");
         Page<EntryDTO> page = entryService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        HttpHeaders headers = PaginationUtil
+                .generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
@@ -105,7 +157,8 @@ public class EntryResource {
      * {@code GET  /entries/:id} : get the "id" entry.
      *
      * @param id the id of the entryDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the entryDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the entryDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/entries/{id}")
     public ResponseEntity<EntryDTO> getEntry(@PathVariable Long id) {
@@ -124,6 +177,8 @@ public class EntryResource {
     public ResponseEntity<Void> deleteEntry(@PathVariable Long id) {
         log.debug("REST request to delete Entry : {}", id);
         entryService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+                .build();
     }
 }
